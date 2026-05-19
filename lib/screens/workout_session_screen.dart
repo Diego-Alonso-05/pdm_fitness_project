@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../models/routine.dart';
 import '../models/completed_workout.dart';
-import '../data/workout_history.dart';
+import '../services/database_service.dart';
 
 class WorkoutSessionScreen extends StatefulWidget {
 
@@ -25,19 +25,14 @@ class WorkoutSessionScreen extends StatefulWidget {
 class _WorkoutSessionScreenState
     extends State<WorkoutSessionScreen> {
 
-  // =========================================================
-  // COLORS
-  // =========================================================
+  static const Color backgroundColor =
+      Color(0xFF050505);
 
-  static const Color backgroundColor = Color(0xFF050505);
+  static const Color cardColor =
+      Color(0xFF111217);
 
-  static const Color cardColor = Color(0xFF111217);
-
-  static const Color neonGreen = Color(0xFFB6FF00);
-
-  // =========================================================
-  // SESSION STATE
-  // =========================================================
+  static const Color neonGreen =
+      Color(0xFFB6FF00);
 
   int currentExerciseIndex = 0;
 
@@ -48,10 +43,6 @@ class _WorkoutSessionScreenState
   int secondsElapsed = 0;
 
   Timer? timer;
-
-  // =========================================================
-  // LIFECYCLE
-  // =========================================================
 
   @override
   void initState() {
@@ -122,7 +113,7 @@ class _WorkoutSessionScreenState
     }
   }
 
-  void nextExercise() {
+  Future<void> nextExercise() async {
 
     if (currentExerciseIndex <
         widget.routine.exercises.length - 1) {
@@ -139,26 +130,27 @@ class _WorkoutSessionScreenState
       timer?.cancel();
 
       // =====================================
-      // SAVE WORKOUT
+      // SAVE TO SQLITE
       // =====================================
 
-      workoutHistory.add(
+      final workout = CompletedWorkout(
 
-        CompletedWorkout(
+        routineName: widget.routine.name,
 
-          routineName: widget.routine.name,
+        date:
+            '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
 
-          date:
-              '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-
-          duration: secondsElapsed ~/ 60,
-
-        ),
+        duration: secondsElapsed ~/ 60,
       );
+
+      await DatabaseService.instance
+          .insertWorkout(workout);
 
       // =====================================
       // FINISH DIALOG
       // =====================================
+
+      if (!mounted) return;
 
       showDialog(
 
@@ -171,7 +163,8 @@ class _WorkoutSessionScreenState
             backgroundColor: cardColor,
 
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius:
+                  BorderRadius.circular(24),
             ),
 
             title: Text(
@@ -184,7 +177,7 @@ class _WorkoutSessionScreenState
             ),
 
             content: Text(
-              'Great job finishing your workout session.',
+              'Your workout has been saved locally.',
 
               style: GoogleFonts.inter(
                 color: Colors.grey,
@@ -219,15 +212,12 @@ class _WorkoutSessionScreenState
     }
   }
 
-  // =========================================================
-  // BUILD
-  // =========================================================
-
   @override
   Widget build(BuildContext context) {
 
     final currentExercise =
-        widget.routine.exercises[currentExerciseIndex];
+        widget.routine.exercises[
+            currentExerciseIndex];
 
     final progress =
         (currentExerciseIndex + 1) /
@@ -241,18 +231,16 @@ class _WorkoutSessionScreenState
 
         child: SingleChildScrollView(
 
-          physics: const BouncingScrollPhysics(),
+          physics:
+              const BouncingScrollPhysics(),
 
           padding: const EdgeInsets.all(20),
 
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
 
             children: [
-
-              // =====================================
-              // HEADER
-              // =====================================
 
               Row(
                 mainAxisAlignment:
@@ -268,17 +256,19 @@ class _WorkoutSessionScreenState
 
                     child: Container(
 
-                      padding: const EdgeInsets.all(14),
+                      padding:
+                          const EdgeInsets.all(14),
 
                       decoration: BoxDecoration(
                         color: cardColor,
 
                         borderRadius:
-                            BorderRadius.circular(18),
+                            BorderRadius.circular(
+                                18),
 
                         border: Border.all(
-                          color:
-                              neonGreen.withOpacity(0.20),
+                          color: neonGreen
+                              .withOpacity(0.20),
                         ),
                       ),
 
@@ -296,12 +286,15 @@ class _WorkoutSessionScreenState
                       child: Text(
                         widget.routine.name,
 
-                        overflow: TextOverflow.ellipsis,
+                        overflow:
+                            TextOverflow.ellipsis,
 
-                        style: GoogleFonts.inter(
+                        style:
+                            GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 22,
-                          fontWeight: FontWeight.w800,
+                          fontWeight:
+                              FontWeight.w800,
                         ),
                       ),
                     ),
@@ -314,10 +307,6 @@ class _WorkoutSessionScreenState
 
               const SizedBox(height: 34),
 
-              // =====================================
-              // TIMER
-              // =====================================
-
               Center(
 
                 child: Column(
@@ -327,7 +316,8 @@ class _WorkoutSessionScreenState
                     Text(
                       'Workout Timer',
 
-                      style: GoogleFonts.inter(
+                      style:
+                          GoogleFonts.inter(
                         color: Colors.grey,
                         fontSize: 15,
                       ),
@@ -338,12 +328,15 @@ class _WorkoutSessionScreenState
                     FittedBox(
 
                       child: Text(
-                        formatTime(secondsElapsed),
+                        formatTime(
+                            secondsElapsed),
 
-                        style: GoogleFonts.inter(
+                        style:
+                            GoogleFonts.inter(
                           color: neonGreen,
                           fontSize: 48,
-                          fontWeight: FontWeight.w900,
+                          fontWeight:
+                              FontWeight.w900,
                         ),
                       ),
                     ),
@@ -354,18 +347,16 @@ class _WorkoutSessionScreenState
 
               const SizedBox(height: 34),
 
-              // =====================================
-              // PROGRESS BAR
-              // =====================================
-
               ClipRRect(
 
-                borderRadius: BorderRadius.circular(20),
+                borderRadius:
+                    BorderRadius.circular(20),
 
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 10,
-                  backgroundColor: Colors.white10,
+                  backgroundColor:
+                      Colors.white10,
                   valueColor:
                       const AlwaysStoppedAnimation(
                     neonGreen,
@@ -386,15 +377,12 @@ class _WorkoutSessionScreenState
 
               const SizedBox(height: 26),
 
-              // =====================================
-              // EXERCISE CARD
-              // =====================================
-
               Container(
 
                 width: double.infinity,
 
-                padding: const EdgeInsets.all(22),
+                padding:
+                    const EdgeInsets.all(22),
 
                 decoration: BoxDecoration(
                   color: cardColor,
@@ -403,7 +391,9 @@ class _WorkoutSessionScreenState
                       BorderRadius.circular(30),
 
                   border: Border.all(
-                    color: neonGreen.withOpacity(0.22),
+                    color:
+                        neonGreen.withOpacity(
+                            0.22),
                   ),
                 ),
 
@@ -416,7 +406,8 @@ class _WorkoutSessionScreenState
                     Text(
                       'Current Exercise',
 
-                      style: GoogleFonts.inter(
+                      style:
+                          GoogleFonts.inter(
                         color: Colors.grey,
                         fontSize: 14,
                       ),
@@ -427,12 +418,15 @@ class _WorkoutSessionScreenState
                     Text(
                       currentExercise,
 
-                      overflow: TextOverflow.ellipsis,
+                      overflow:
+                          TextOverflow.ellipsis,
 
-                      style: GoogleFonts.inter(
+                      style:
+                          GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 30,
-                        fontWeight: FontWeight.w900,
+                        fontWeight:
+                            FontWeight.w900,
                       ),
                     ),
 
@@ -443,17 +437,20 @@ class _WorkoutSessionScreenState
                       children: [
 
                         Expanded(
-                          child: buildInfoCard(
+                          child:
+                              buildInfoCard(
                             title: 'SET',
                             value:
                                 '$currentSet / $totalSets',
                           ),
                         ),
 
-                        const SizedBox(width: 14),
+                        const SizedBox(
+                            width: 14),
 
                         Expanded(
-                          child: buildInfoCard(
+                          child:
+                              buildInfoCard(
                             title: 'REPS',
                             value: '12',
                           ),
@@ -468,28 +465,30 @@ class _WorkoutSessionScreenState
 
               const SizedBox(height: 28),
 
-              // =====================================
-              // ACTION BUTTON
-              // =====================================
-
               SizedBox(
 
                 width: double.infinity,
 
                 child: ElevatedButton(
 
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: neonGreen,
-                    foregroundColor: Colors.black,
+                  style:
+                      ElevatedButton.styleFrom(
+                    backgroundColor:
+                        neonGreen,
+                    foregroundColor:
+                        Colors.black,
 
                     padding:
-                        const EdgeInsets.symmetric(
+                        const EdgeInsets
+                            .symmetric(
                       vertical: 20,
                     ),
 
-                    shape: RoundedRectangleBorder(
+                    shape:
+                        RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(22),
+                          BorderRadius.circular(
+                              22),
                     ),
                   ),
 
@@ -500,8 +499,10 @@ class _WorkoutSessionScreenState
                         ? 'NEXT EXERCISE'
                         : 'COMPLETE SET',
 
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w900,
+                    style:
+                        GoogleFonts.inter(
+                      fontWeight:
+                          FontWeight.w900,
                       fontSize: 16,
                     ),
                   ),
@@ -516,10 +517,6 @@ class _WorkoutSessionScreenState
       ),
     );
   }
-
-  // =========================================================
-  // INFO CARD
-  // =========================================================
 
   Widget buildInfoCard({
     required String title,
@@ -536,10 +533,12 @@ class _WorkoutSessionScreenState
       decoration: BoxDecoration(
         color: const Color(0xFF171920),
 
-        borderRadius: BorderRadius.circular(20),
+        borderRadius:
+            BorderRadius.circular(20),
 
         border: Border.all(
-          color: neonGreen.withOpacity(0.16),
+          color:
+              neonGreen.withOpacity(0.16),
         ),
       ),
 

@@ -1,27 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../data/workout_history.dart';
+import '../models/completed_workout.dart';
+import '../services/database_service.dart';
 import '../widgets/custom_bottom_navbar.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
 
   const HistoryScreen({super.key});
 
   @override
+  State<HistoryScreen> createState() =>
+      _HistoryScreenState();
+}
+
+class _HistoryScreenState
+    extends State<HistoryScreen> {
+
+  static const Color backgroundColor =
+      Color(0xFF050505);
+
+  static const Color cardColor =
+      Color(0xFF111217);
+
+  static const Color neonGreen =
+      Color(0xFFB6FF00);
+
+  List<CompletedWorkout> workouts = [];
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+
+    super.initState();
+
+    loadWorkouts();
+  }
+
+  Future<void> loadWorkouts() async {
+
+    final data =
+        await DatabaseService.instance
+            .getWorkouts();
+
+    setState(() {
+
+      workouts = data.reversed.toList();
+
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    const backgroundColor = Color(0xFF050505);
-
-    const cardColor = Color(0xFF111217);
-
-    const neonGreen = Color(0xFFB6FF00);
 
     return Scaffold(
 
       backgroundColor: backgroundColor,
 
-      bottomNavigationBar: const CustomBottomNavbar(
+      bottomNavigationBar:
+          const CustomBottomNavbar(
         currentIndex: 3,
       ),
 
@@ -32,13 +71,10 @@ class HistoryScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
 
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
 
             children: [
-
-              // =====================================
-              // HEADER
-              // =====================================
 
               Text(
                 'Workout History',
@@ -63,11 +99,16 @@ class HistoryScreen extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // =====================================
-              // EMPTY STATE
-              // =====================================
+              if (isLoading)
 
-              if (workoutHistory.isEmpty)
+                const Expanded(
+                  child: Center(
+                    child:
+                        CircularProgressIndicator(),
+                  ),
+                )
+
+              else if (workouts.isEmpty)
 
                 Expanded(
 
@@ -76,7 +117,8 @@ class HistoryScreen extends StatelessWidget {
                     child: Text(
                       'No workouts completed yet.',
 
-                      style: GoogleFonts.inter(
+                      style:
+                          GoogleFonts.inter(
                         color: Colors.grey,
                         fontSize: 16,
                       ),
@@ -86,22 +128,20 @@ class HistoryScreen extends StatelessWidget {
 
               else
 
-                // =====================================
-                // HISTORY LIST
-                // =====================================
-
                 Expanded(
 
                   child: ListView.builder(
 
-                    physics: const BouncingScrollPhysics(),
+                    physics:
+                        const BouncingScrollPhysics(),
 
-                    itemCount: workoutHistory.length,
+                    itemCount: workouts.length,
 
-                    itemBuilder: (context, index) {
+                    itemBuilder:
+                        (context, index) {
 
                       final workout =
-                          workoutHistory[index];
+                          workouts[index];
 
                       return Container(
 
@@ -111,26 +151,29 @@ class HistoryScreen extends StatelessWidget {
                         ),
 
                         padding:
-                            const EdgeInsets.all(22),
+                            const EdgeInsets.all(
+                                22),
 
-                        decoration: BoxDecoration(
+                        decoration:
+                            BoxDecoration(
 
                           color: cardColor,
 
                           borderRadius:
-                              BorderRadius.circular(28),
+                              BorderRadius
+                                  .circular(28),
 
                           border: Border.all(
-                            color:
-                                neonGreen.withOpacity(
-                              0.20,
-                            ),
+                            color: neonGreen
+                                .withOpacity(
+                                    0.20),
                           ),
                         ),
 
                         child: Column(
                           crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              CrossAxisAlignment
+                                  .start,
 
                           children: [
 
@@ -144,16 +187,18 @@ class HistoryScreen extends StatelessWidget {
                                 Expanded(
 
                                   child: Text(
-                                    workout.routineName,
+                                    workout
+                                        .routineName,
 
                                     overflow:
                                         TextOverflow
                                             .ellipsis,
 
                                     style:
-                                        GoogleFonts.inter(
-                                      color:
-                                          Colors.white,
+                                        GoogleFonts
+                                            .inter(
+                                      color: Colors
+                                          .white,
 
                                       fontSize: 22,
 
@@ -169,7 +214,8 @@ class HistoryScreen extends StatelessWidget {
                                   padding:
                                       const EdgeInsets
                                           .symmetric(
-                                    horizontal: 12,
+                                    horizontal:
+                                        12,
                                     vertical: 8,
                                   ),
 
@@ -190,7 +236,8 @@ class HistoryScreen extends StatelessWidget {
                                     '${workout.duration} min',
 
                                     style:
-                                        GoogleFonts.inter(
+                                        GoogleFonts
+                                            .inter(
                                       color:
                                           neonGreen,
 
@@ -204,27 +251,34 @@ class HistoryScreen extends StatelessWidget {
                               ],
                             ),
 
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                                height: 18),
 
                             Row(
 
                               children: [
 
                                 const Icon(
-                                  Icons.calendar_today,
-                                  color: neonGreen,
+                                  Icons
+                                      .calendar_today,
+                                  color:
+                                      neonGreen,
                                   size: 18,
                                 ),
 
-                                const SizedBox(width: 8),
+                                const SizedBox(
+                                    width: 8),
 
                                 Text(
                                   workout.date,
 
                                   style:
-                                      GoogleFonts.inter(
-                                    color: Colors.grey,
-                                    fontSize: 14,
+                                      GoogleFonts
+                                          .inter(
+                                    color:
+                                        Colors.grey,
+                                    fontSize:
+                                        14,
                                   ),
                                 ),
 
