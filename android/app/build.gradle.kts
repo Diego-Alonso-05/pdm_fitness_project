@@ -9,7 +9,7 @@ android {
     namespace = "com.example.pdm_fitness_project"
     compileSdk = flutter.compileSdkVersion
     buildToolsVersion = "35.0.0"
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

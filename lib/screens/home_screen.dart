@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/custom_bottom_navbar.dart';
 
-class HomeScreen extends StatefulWidget {
+// =========================================================
+// LOCAL GOOGLE FONTS REPLACEMENT
+// =========================================================
 
+class GoogleFonts {
+  static TextStyle inter({
+    Color? color,
+    double? fontSize,
+    FontWeight? fontWeight,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontFamily: 'Arial',
+      color: color,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      height: height,
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
@@ -16,7 +37,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState
     extends State<HomeScreen> {
-
   // =========================================================
   // COLORS
   // =========================================================
@@ -54,7 +74,6 @@ class _HomeScreenState
   // =========================================================
 
   String getGreeting() {
-
     final hour = DateTime.now().hour;
 
     if (hour < 12) {
@@ -73,9 +92,7 @@ class _HomeScreenState
   // =========================================================
 
   void addWater() {
-
     if (waterGlasses < maxWater) {
-
       setState(() {
         waterGlasses++;
       });
@@ -87,7 +104,6 @@ class _HomeScreenState
   }
 
   void startWorkout() {
-
     setState(() {
       workoutSessions++;
     });
@@ -98,25 +114,18 @@ class _HomeScreenState
   }
 
   void showCustomSnackBar(String text) {
-
     ScaffoldMessenger.of(context)
         .showSnackBar(
-
       SnackBar(
-
         backgroundColor: neonGreen,
-
         behavior:
             SnackBarBehavior.floating,
-
         shape: RoundedRectangleBorder(
           borderRadius:
               BorderRadius.circular(16),
         ),
-
         content: Text(
           text,
-
           style: GoogleFonts.inter(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -131,43 +140,29 @@ class _HomeScreenState
   // =========================================================
 
   void openProfileMenu() {
-
     showModalBottomSheet(
-
       context: context,
-
       backgroundColor: cardColor,
-
       isScrollControlled: true,
-
       shape:
           const RoundedRectangleBorder(
-
         borderRadius:
             BorderRadius.vertical(
           top: Radius.circular(30),
         ),
       ),
-
       builder: (context) {
-
         return SafeArea(
-
           child: Padding(
-
             padding:
                 const EdgeInsets.all(22),
-
             child: Column(
               mainAxisSize:
                   MainAxisSize.min,
-
               children: [
-
                 Container(
                   width: 60,
                   height: 5,
-
                   decoration: BoxDecoration(
                     color: Colors.white24,
                     borderRadius:
@@ -182,10 +177,8 @@ class _HomeScreenState
                   radius: 34,
                   backgroundColor:
                       neonGreen,
-
                   child: Text(
                     'D',
-
                     style:
                         GoogleFonts.inter(
                       color: Colors.black,
@@ -200,7 +193,6 @@ class _HomeScreenState
 
                 Text(
                   'David',
-
                   style:
                       GoogleFonts.inter(
                     color: primaryText,
@@ -214,7 +206,6 @@ class _HomeScreenState
 
                 Text(
                   'Fitness Enthusiast',
-
                   style:
                       GoogleFonts.inter(
                     color: secondaryText,
@@ -248,7 +239,6 @@ class _HomeScreenState
                 ),
 
                 const SizedBox(height: 10),
-
               ],
             ),
           ),
@@ -262,41 +252,29 @@ class _HomeScreenState
     required String title,
     bool isLogout = false,
   }) {
-
     return Padding(
-
       padding:
           const EdgeInsets.only(bottom: 12),
-
       child: InkWell(
-
         borderRadius:
             BorderRadius.circular(18),
-
         onTap: () {
-
           Navigator.pop(context);
 
           showCustomSnackBar(
             '$title selected',
           );
         },
-
         child: Container(
-
           width: double.infinity,
-
           padding:
               const EdgeInsets.all(18),
-
           decoration: BoxDecoration(
             color:
                 const Color(0xFF171920),
-
             borderRadius:
                 BorderRadius.circular(
                     18),
-
             border: Border.all(
               color: isLogout
                   ? Colors.red.withOpacity(
@@ -305,11 +283,8 @@ class _HomeScreenState
                       .withOpacity(0.20),
             ),
           ),
-
           child: Row(
-
             children: [
-
               Icon(
                 icon,
                 color: isLogout
@@ -321,7 +296,6 @@ class _HomeScreenState
 
               Text(
                 title,
-
                 style:
                     GoogleFonts.inter(
                   color: primaryText,
@@ -330,7 +304,6 @@ class _HomeScreenState
                       FontWeight.w600,
                 ),
               ),
-
             ],
           ),
         ),
@@ -344,24 +317,17 @@ class _HomeScreenState
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor:
           backgroundColor,
-
       bottomNavigationBar:
           const CustomBottomNavbar(
         currentIndex: 0,
       ),
-
       body: SafeArea(
-
         child: SingleChildScrollView(
-
           physics:
               const BouncingScrollPhysics(),
-
           padding:
               const EdgeInsets.fromLTRB(
             18,
@@ -369,13 +335,10 @@ class _HomeScreenState
             18,
             110,
           ),
-
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
-
             children: [
-
               buildHeader(),
 
               const SizedBox(height: 34),
@@ -405,33 +368,25 @@ class _HomeScreenState
               // =====================================
 
               SizedBox(
-
                 width: double.infinity,
-
                 child: ElevatedButton(
-
                   style:
                       ElevatedButton
                           .styleFrom(
-
                     backgroundColor:
                         Colors.transparent,
-
                     foregroundColor:
                         neonGreen,
-
                     side: BorderSide(
                       color: neonGreen
                           .withOpacity(
                               0.30),
                     ),
-
                     padding:
                         const EdgeInsets
                             .symmetric(
                       vertical: 20,
                     ),
-
                     shape:
                         RoundedRectangleBorder(
                       borderRadius:
@@ -440,17 +395,13 @@ class _HomeScreenState
                                   24),
                     ),
                   ),
-
                   onPressed: () {
-
                     context.go(
                       '/exercises',
                     );
                   },
-
                   child: Text(
                     'OPEN EXERCISE LIBRARY',
-
                     style:
                         GoogleFonts.inter(
                       fontWeight:
@@ -460,7 +411,6 @@ class _HomeScreenState
                   ),
                 ),
               ),
-
             ],
           ),
         ),
@@ -473,27 +423,19 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildHeader() {
-
     return Row(
       mainAxisAlignment:
           MainAxisAlignment.spaceBetween,
-
       children: [
-
         Expanded(
-
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
-
             children: [
-
               Text(
                 'FIT-NESS',
-
                 overflow:
                     TextOverflow.ellipsis,
-
                 style:
                     GoogleFonts.inter(
                   color: neonGreen,
@@ -508,10 +450,8 @@ class _HomeScreenState
 
               Text(
                 '${getGreeting()}, David',
-
                 overflow:
                     TextOverflow.ellipsis,
-
                 style:
                     GoogleFonts.inter(
                   color: secondaryText,
@@ -520,7 +460,6 @@ class _HomeScreenState
                       FontWeight.w500,
                 ),
               ),
-
             ],
           ),
         ),
@@ -528,16 +467,11 @@ class _HomeScreenState
         const SizedBox(width: 14),
 
         GestureDetector(
-
           onTap: openProfileMenu,
-
           child: Container(
-
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-
               boxShadow: [
-
                 BoxShadow(
                   color:
                       neonGreen.withOpacity(
@@ -545,18 +479,14 @@ class _HomeScreenState
                   blurRadius: 20,
                   spreadRadius: 1,
                 ),
-
               ],
             ),
-
             child: CircleAvatar(
               radius: 28,
               backgroundColor:
                   neonGreen,
-
               child: Text(
                 'D',
-
                 style:
                     GoogleFonts.inter(
                   color: Colors.black,
@@ -568,7 +498,6 @@ class _HomeScreenState
             ),
           ),
         ),
-
       ],
     ).animate().fadeIn(
           duration: 500.ms,
@@ -580,16 +509,12 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildTodaySection() {
-
     return Column(
       crossAxisAlignment:
           CrossAxisAlignment.start,
-
       children: [
-
         Text(
           'Today',
-
           style: GoogleFonts.inter(
             color: primaryText,
             fontSize: 40,
@@ -601,13 +526,11 @@ class _HomeScreenState
 
         Text(
           'Your daily fitness overview',
-
           style: GoogleFonts.inter(
             color: secondaryText,
             fontSize: 15,
           ),
         ),
-
       ],
     );
   }
@@ -617,10 +540,8 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildStatsSection() {
-
     return Row(
       children: [
-
         Expanded(
           child: buildStatCard(
             title: 'Calories',
@@ -641,7 +562,6 @@ class _HomeScreenState
             icon: Icons.fitness_center,
           ),
         ),
-
       ],
     );
   }
@@ -652,47 +572,34 @@ class _HomeScreenState
     required String subtitle,
     required IconData icon,
   }) {
-
     return Container(
-
       padding:
           const EdgeInsets.all(18),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius:
             BorderRadius.circular(28),
-
         border: Border.all(
           color:
               neonGreen.withOpacity(0.22),
           width: 1.2,
         ),
       ),
-
       child: Column(
         crossAxisAlignment:
             CrossAxisAlignment.start,
-
         children: [
-
           Row(
             mainAxisAlignment:
                 MainAxisAlignment
                     .spaceBetween,
-
             children: [
-
               Expanded(
-
                 child: Text(
                   title,
-
                   overflow:
                       TextOverflow
                           .ellipsis,
-
                   style:
                       GoogleFonts.inter(
                     color:
@@ -711,21 +618,17 @@ class _HomeScreenState
                 color: neonGreen,
                 size: 22,
               ),
-
             ],
           ),
 
           const SizedBox(height: 18),
 
           FittedBox(
-
             fit: BoxFit.scaleDown,
             alignment:
                 Alignment.centerLeft,
-
             child: Text(
               value,
-
               style:
                   GoogleFonts.inter(
                 color: primaryText,
@@ -741,10 +644,8 @@ class _HomeScreenState
 
           Text(
             subtitle,
-
             overflow:
                 TextOverflow.ellipsis,
-
             style: GoogleFonts.inter(
               color: mutedText,
               fontSize: 14,
@@ -752,7 +653,6 @@ class _HomeScreenState
                   FontWeight.w500,
             ),
           ),
-
         ],
       ),
     );
@@ -763,42 +663,30 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildMotivationCard() {
-
     return Container(
-
       width: double.infinity,
-
       padding:
           const EdgeInsets.all(22),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius:
             BorderRadius.circular(28),
-
         border: Border.all(
           color:
               neonGreen.withOpacity(0.25),
         ),
       ),
-
       child: Row(
-
         children: [
-
           Container(
-
             padding:
                 const EdgeInsets.all(12),
-
             decoration: BoxDecoration(
               color: neonGreen,
               borderRadius:
                   BorderRadius.circular(
                       16),
             ),
-
             child: const Icon(
               Icons.auto_awesome,
               color: Colors.black,
@@ -808,16 +696,12 @@ class _HomeScreenState
           const SizedBox(width: 16),
 
           Expanded(
-
             child: Column(
               crossAxisAlignment:
                   CrossAxisAlignment.start,
-
               children: [
-
                 Text(
                   'Daily Motivation',
-
                   style:
                       GoogleFonts.inter(
                     color:
@@ -832,7 +716,6 @@ class _HomeScreenState
 
                 Text(
                   'Consistency beats motivation.',
-
                   style:
                       GoogleFonts.inter(
                     color: primaryText,
@@ -841,11 +724,9 @@ class _HomeScreenState
                         FontWeight.w700,
                   ),
                 ),
-
               ],
             ),
           ),
-
         ],
       ),
     );
@@ -856,55 +737,39 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildWorkoutPlanCard() {
-
     return Container(
-
       width: double.infinity,
-
       padding:
           const EdgeInsets.all(24),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius:
             BorderRadius.circular(28),
-
         border: Border.all(
           color:
               neonGreen.withOpacity(0.22),
         ),
       ),
-
       child: Column(
         crossAxisAlignment:
             CrossAxisAlignment.start,
-
         children: [
-
           Row(
             mainAxisAlignment:
                 MainAxisAlignment
                     .spaceBetween,
-
             children: [
-
               Expanded(
-
                 child: Column(
                   crossAxisAlignment:
                       CrossAxisAlignment
                           .start,
-
                   children: [
-
                     Text(
                       'Today Plan',
-
                       overflow:
                           TextOverflow
                               .ellipsis,
-
                       style:
                           GoogleFonts.inter(
                         color:
@@ -920,11 +785,9 @@ class _HomeScreenState
 
                     Text(
                       'Push workout • 45 min',
-
                       overflow:
                           TextOverflow
                               .ellipsis,
-
                       style:
                           GoogleFonts.inter(
                         color:
@@ -932,17 +795,14 @@ class _HomeScreenState
                         fontSize: 15,
                       ),
                     ),
-
                   ],
                 ),
               ),
 
               Container(
-
                 padding:
                     const EdgeInsets.all(
                         12),
-
                 decoration: BoxDecoration(
                   color: neonGreen
                       .withOpacity(0.12),
@@ -950,13 +810,11 @@ class _HomeScreenState
                       BorderRadius.circular(
                           16),
                 ),
-
                 child: const Icon(
                   Icons.arrow_forward,
                   color: neonGreen,
                 ),
               ),
-
             ],
           ),
 
@@ -966,7 +824,6 @@ class _HomeScreenState
             borderRadius:
                 BorderRadius.circular(
                     20),
-
             child:
                 LinearProgressIndicator(
               value: 0.7,
@@ -984,7 +841,6 @@ class _HomeScreenState
 
           Text(
             '70% completed',
-
             style: GoogleFonts.inter(
               color: secondaryText,
               fontSize: 14,
@@ -994,24 +850,19 @@ class _HomeScreenState
           const SizedBox(height: 22),
 
           SizedBox(
-
             width: double.infinity,
-
             child: ElevatedButton(
-
               style: ElevatedButton
                   .styleFrom(
                 backgroundColor:
                     neonGreen,
                 foregroundColor:
                     Colors.black,
-
                 padding:
                     const EdgeInsets
                         .symmetric(
                   vertical: 18,
                 ),
-
                 shape:
                     RoundedRectangleBorder(
                   borderRadius:
@@ -1019,12 +870,9 @@ class _HomeScreenState
                           .circular(18),
                 ),
               ),
-
               onPressed: startWorkout,
-
               child: Text(
                 'Start Workout',
-
                 style:
                     GoogleFonts.inter(
                   fontWeight:
@@ -1034,7 +882,6 @@ class _HomeScreenState
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -1045,49 +892,35 @@ class _HomeScreenState
   // =========================================================
 
   Widget buildWaterTrackerCard() {
-
     return Container(
-
       width: double.infinity,
-
       padding:
           const EdgeInsets.all(24),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius:
             BorderRadius.circular(28),
-
         border: Border.all(
           color:
               neonGreen.withOpacity(0.22),
         ),
       ),
-
       child: Row(
         mainAxisAlignment:
             MainAxisAlignment
                 .spaceBetween,
-
         children: [
-
           Expanded(
-
             child: Column(
               crossAxisAlignment:
                   CrossAxisAlignment
                       .start,
-
               children: [
-
                 Text(
                   'Water Intake',
-
                   overflow:
                       TextOverflow
                           .ellipsis,
-
                   style:
                       GoogleFonts.inter(
                     color: primaryText,
@@ -1101,7 +934,6 @@ class _HomeScreenState
 
                 Text(
                   '$waterGlasses / $maxWater glasses',
-
                   style:
                       GoogleFonts.inter(
                     color:
@@ -1109,7 +941,6 @@ class _HomeScreenState
                     fontSize: 15,
                   ),
                 ),
-
               ],
             ),
           ),
@@ -1117,22 +948,17 @@ class _HomeScreenState
           const SizedBox(width: 12),
 
           GestureDetector(
-
             onTap: addWater,
-
             child: Container(
-
               padding:
                   const EdgeInsets.all(
                       16),
-
               decoration: BoxDecoration(
                 color: neonGreen,
                 borderRadius:
                     BorderRadius.circular(
                         18),
               ),
-
               child: const Icon(
                 Icons.add,
                 color: Colors.black,
@@ -1140,7 +966,6 @@ class _HomeScreenState
               ),
             ),
           ),
-
         ],
       ),
     );

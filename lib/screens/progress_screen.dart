@@ -2,350 +2,203 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-import '../data/workout_history.dart';
+import '../controllers/progress_controller.dart';
+import '../models/completed_workout.dart';
 import '../widgets/custom_bottom_navbar.dart';
 
-class ProgressScreen extends StatelessWidget {
-
+class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
 
-  // =========================================================
-  // COLORS
-  // =========================================================
+  @override
+  State<ProgressScreen> createState() => _ProgressScreenState();
+}
 
+class _ProgressScreenState extends State<ProgressScreen> {
   static const Color backgroundColor = Color(0xFF050505);
-
   static const Color cardColor = Color(0xFF111217);
-
   static const Color neonGreen = Color(0xFFB6FF00);
+
+  final ProgressController progressController = ProgressController();
+
+  late Future<ProgressSummary> progressFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    progressFuture = progressController.loadProgressData();
+  }
+
+  Future<void> refreshProgress() async {
+    setState(() {
+      progressFuture = progressController.loadProgressData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    final totalWorkouts = workoutHistory.length;
-
-    final totalMinutes = workoutHistory.fold(
-      0,
-      (sum, workout) => sum + workout.duration,
-    );
-
-    final estimatedCalories = totalMinutes * 8;
-
     return Scaffold(
-
       backgroundColor: backgroundColor,
-
       bottomNavigationBar: const CustomBottomNavbar(
         currentIndex: 2,
       ),
-
       body: SafeArea(
-
-        child: SingleChildScrollView(
-
-          physics: const BouncingScrollPhysics(),
-
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
-
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: [
-
-              // =====================================
-              // HEADER
-              // =====================================
-
-              Text(
-                'Progress',
-
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontSize: 38,
-                  fontWeight: FontWeight.w900,
+        child: FutureBuilder<ProgressSummary>(
+          future: progressFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: neonGreen,
                 ),
-              ),
+              );
+            }
 
-              const SizedBox(height: 8),
+            if (snapshot.hasError) {
+              return buildErrorState();
+            }
 
-              Text(
-                'Track your fitness evolution',
+            final summary = snapshot.data!;
 
-                style: GoogleFonts.inter(
-                  color: Colors.grey,
-                  fontSize: 15,
+            return RefreshIndicator(
+              color: neonGreen,
+              backgroundColor: cardColor,
+              onRefresh: refreshProgress,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-              ),
-
-              const SizedBox(height: 34),
-
-              // =====================================
-              // STATS ROW
-              // =====================================
-
-              Row(
-
-                children: [
-
-                  Expanded(
-                    child: buildStatCard(
-                      title: 'Workouts',
-                      value: '$totalWorkouts',
-                      subtitle: 'completed',
-                      icon: Icons.fitness_center,
-                    ),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: buildStatCard(
-                      title: 'Minutes',
-                      value: '$totalMinutes',
-                      subtitle: 'trained',
-                      icon: Icons.timer_outlined,
-                    ),
-                  ),
-
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              buildLargeStatCard(
-                title: 'Calories Burned',
-                value: '$estimatedCalories',
-                subtitle: 'estimated kcal',
-                icon: Icons.local_fire_department_outlined,
-              ),
-
-              const SizedBox(height: 30),
-
-              // =====================================
-              // CHART TITLE
-              // =====================================
-
-              Text(
-                'Weekly Activity',
-
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  120,
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // =====================================
-              // CHART CARD
-              // =====================================
-
-              Container(
-
-                height: 280,
-
-                padding: const EdgeInsets.all(24),
-
-                decoration: BoxDecoration(
-                  color: cardColor,
-
-                  borderRadius: BorderRadius.circular(30),
-
-                  border: Border.all(
-                    color: neonGreen.withOpacity(0.20),
-                  ),
-                ),
-
-                child: BarChart(
-
-                  BarChartData(
-
-                    alignment: BarChartAlignment.spaceAround,
-
-                    maxY: 10,
-
-                    gridData: FlGridData(
-                      show: false,
-                    ),
-
-                    borderData: FlBorderData(
-                      show: false,
-                    ),
-
-                    titlesData: FlTitlesData(
-
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: false,
-                        ),
-                      ),
-
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: false,
-                        ),
-                      ),
-
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: false,
-                        ),
-                      ),
-
-                      bottomTitles: AxisTitles(
-
-                        sideTitles: SideTitles(
-
-                          showTitles: true,
-
-                          getTitlesWidget:
-                              (value, meta) {
-
-                            final style =
-                                GoogleFonts.inter(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            );
-
-                            switch (value.toInt()) {
-
-                              case 0:
-                                return Text(
-                                  'Mon',
-                                  style: style,
-                                );
-
-                              case 1:
-                                return Text(
-                                  'Tue',
-                                  style: style,
-                                );
-
-                              case 2:
-                                return Text(
-                                  'Wed',
-                                  style: style,
-                                );
-
-                              case 3:
-                                return Text(
-                                  'Thu',
-                                  style: style,
-                                );
-
-                              case 4:
-                                return Text(
-                                  'Fri',
-                                  style: style,
-                                );
-
-                              case 5:
-                                return Text(
-                                  'Sat',
-                                  style: style,
-                                );
-
-                              case 6:
-                                return Text(
-                                  'Sun',
-                                  style: style,
-                                );
-
-                              default:
-                                return const SizedBox();
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-
-                    barGroups: [
-
-                      buildBar(0, 3),
-                      buildBar(1, 6),
-                      buildBar(2, 4),
-                      buildBar(3, 8),
-                      buildBar(4, 5),
-                      buildBar(5, 7),
-                      buildBar(6, 2),
-
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // =====================================
-              // MOTIVATION CARD
-              // =====================================
-
-              Container(
-
-                width: double.infinity,
-
-                padding: const EdgeInsets.all(24),
-
-                decoration: BoxDecoration(
-                  color: cardColor,
-
-                  borderRadius: BorderRadius.circular(28),
-
-                  border: Border.all(
-                    color: neonGreen.withOpacity(0.20),
-                  ),
-                ),
-
-                child: Row(
-
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    buildHeader(),
 
-                    Container(
+                    const SizedBox(height: 34),
 
-                      padding: const EdgeInsets.all(14),
-
-                      decoration: BoxDecoration(
-                        color: neonGreen,
-                        borderRadius:
-                            BorderRadius.circular(18),
-                      ),
-
-                      child: const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    const SizedBox(width: 18),
-
-                    Expanded(
-
-                      child: Text(
-                        'Small progress every day adds up to big results.',
-
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: buildStatCard(
+                            title: 'Workouts',
+                            value: '${summary.totalWorkouts}',
+                            subtitle: 'completed',
+                            icon: Icons.fitness_center,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: buildStatCard(
+                            title: 'Minutes',
+                            value: '${summary.totalMinutes}',
+                            subtitle: 'trained',
+                            icon: Icons.timer_outlined,
+                          ),
+                        ),
+                      ],
                     ),
 
+                    const SizedBox(height: 16),
+
+                    buildLargeStatCard(
+                      title: 'Calories Burned',
+                      value: '${summary.estimatedCalories}',
+                      subtitle: 'estimated kcal',
+                      icon: Icons.local_fire_department_outlined,
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    buildSectionTitle(
+                      'Weekly Activity',
+                      'Workouts completed by day',
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    buildChartCard(summary.weeklyData),
+
+                    const SizedBox(height: 30),
+
+                    buildSectionTitle(
+                      'Recent Workouts',
+                      'Last sessions saved locally',
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    if (summary.workouts.isEmpty)
+                      buildEmptyState()
+                    else
+                      buildRecentWorkouts(summary.workouts),
+
+                    const SizedBox(height: 30),
+
+                    buildMotivationCard(),
                   ],
                 ),
               ),
-
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
 
-  // =========================================================
-  // SMALL STAT CARD
-  // =========================================================
+  Widget buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Progress',
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 38,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Track your fitness evolution',
+          style: GoogleFonts.inter(
+            color: Colors.grey,
+            fontSize: 15,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildSectionTitle(
+    String title,
+    String subtitle,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: GoogleFonts.inter(
+            color: Colors.grey,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget buildStatCard({
     required String title,
@@ -353,75 +206,53 @@ class ProgressScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
   }) {
-
     return Container(
-
       padding: const EdgeInsets.all(22),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius: BorderRadius.circular(28),
-
         border: Border.all(
           color: neonGreen.withOpacity(0.20),
         ),
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
-
           Icon(
             icon,
             color: neonGreen,
             size: 24,
           ),
-
           const SizedBox(height: 20),
-
           Text(
             value,
-
             style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 34,
               fontWeight: FontWeight.w900,
             ),
           ),
-
           const SizedBox(height: 4),
-
           Text(
             title,
-
             style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
-
           const SizedBox(height: 4),
-
           Text(
             subtitle,
-
             style: GoogleFonts.inter(
               color: Colors.grey,
               fontSize: 13,
             ),
           ),
-
         ],
       ),
     );
   }
-
-  // =========================================================
-  // LARGE STAT CARD
-  // =========================================================
 
   Widget buildLargeStatCard({
     required String title,
@@ -429,120 +260,353 @@ class ProgressScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
   }) {
-
     return Container(
-
       width: double.infinity,
-
       padding: const EdgeInsets.all(24),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius: BorderRadius.circular(28),
-
         border: Border.all(
           color: neonGreen.withOpacity(0.20),
         ),
       ),
-
       child: Row(
-
         children: [
-
           Container(
-
             padding: const EdgeInsets.all(18),
-
             decoration: BoxDecoration(
               color: neonGreen.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-
             child: Icon(
               icon,
               color: neonGreen,
               size: 30,
             ),
           ),
-
           const SizedBox(width: 20),
-
           Expanded(
-
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   value,
-
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 34,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   title,
-
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   subtitle,
-
                   style: GoogleFonts.inter(
                     color: Colors.grey,
                     fontSize: 13,
                   ),
                 ),
-
               ],
             ),
           ),
-
         ],
       ),
     );
   }
 
-  // =========================================================
-  // BAR CHART
-  // =========================================================
+  Widget buildChartCard(
+    List<WeeklyWorkoutData> weeklyData,
+  ) {
+    final maxValue = weeklyData
+        .map((data) => data.workouts)
+        .fold<int>(
+          0,
+          (previous, current) =>
+              current > previous ? current : previous,
+        );
 
-  BarChartGroupData buildBar(int x, double y) {
+    final maxY = maxValue < 3 ? 3.0 : maxValue + 1.0;
 
-    return BarChartGroupData(
-
-      x: x,
-
-      barRods: [
-
-        BarChartRodData(
-
-          toY: y,
-
-          width: 18,
-
-          borderRadius: BorderRadius.circular(10),
-
-          color: neonGreen,
-
+    return Container(
+      height: 280,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: neonGreen.withOpacity(0.20),
         ),
+      ),
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceAround,
+          maxY: maxY,
+          gridData: FlGridData(
+            show: false,
+          ),
+          borderData: FlBorderData(
+            show: false,
+          ),
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  final index = value.toInt();
 
+                  if (index < 0 || index >= weeklyData.length) {
+                    return const SizedBox();
+                  }
+
+                  return Text(
+                    weeklyData[index].day,
+                    style: GoogleFonts.inter(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          barGroups: List.generate(
+            weeklyData.length,
+            (index) => buildBar(
+              index,
+              weeklyData[index].workouts.toDouble(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BarChartGroupData buildBar(
+    int x,
+    double y,
+  ) {
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: y,
+          width: 18,
+          borderRadius: BorderRadius.circular(10),
+          color: neonGreen,
+        ),
       ],
+    );
+  }
+
+  Widget buildRecentWorkouts(
+    List<CompletedWorkout> workouts,
+  ) {
+    final recentWorkouts = workouts.reversed.take(5).toList();
+
+    return Column(
+      children: recentWorkouts.map((workout) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: neonGreen.withOpacity(0.18),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: neonGreen.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(
+                  Icons.fitness_center,
+                  color: neonGreen,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      workout.routineName,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${workout.date} · ${workout.duration} min',
+                      style: GoogleFonts.inter(
+                        color: Colors.grey,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget buildEmptyState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: neonGreen.withOpacity(0.20),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.insights,
+            color: neonGreen,
+            size: 42,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No workouts yet',
+            style: GoogleFonts.inter(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Complete a workout session to see your progress here.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildMotivationCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: neonGreen.withOpacity(0.20),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: neonGreen,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Text(
+              'Small progress every day adds up to big results.',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: Colors.red.withOpacity(0.35),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 42,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Error loading progress',
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Please try again later.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
