@@ -54,16 +54,6 @@ class ProgressController {
   List<WeeklyWorkoutData> _buildWeeklyData(
     List<CompletedWorkout> workouts,
   ) {
-    final week = [
-      WeeklyWorkoutData(day: 'Mon', workouts: 0),
-      WeeklyWorkoutData(day: 'Tue', workouts: 0),
-      WeeklyWorkoutData(day: 'Wed', workouts: 0),
-      WeeklyWorkoutData(day: 'Thu', workouts: 0),
-      WeeklyWorkoutData(day: 'Fri', workouts: 0),
-      WeeklyWorkoutData(day: 'Sat', workouts: 0),
-      WeeklyWorkoutData(day: 'Sun', workouts: 0),
-    ];
-
     final counters = List<int>.filled(7, 0);
 
     for (final workout in workouts) {
