@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -59,78 +60,97 @@ class _ProgressScreenState extends State<ProgressScreen> {
               color: neonGreen,
               backgroundColor: cardColor,
               onRefresh: refreshProgress,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                ),
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildHeader(),
+              child: Scrollbar(
+                radius: const Radius.circular(20),
+                thickness: 4,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 24, 120),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildHeader(),
 
-                    const SizedBox(height: 34),
+                      const SizedBox(height: 34),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: buildStatCard(
-                            title: 'Workouts',
-                            value: '${summary.totalWorkouts}',
-                            subtitle: 'completed',
-                            icon: Icons.fitness_center,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildStatCard(
+                                  title: 'Workouts',
+                                  value: '${summary.totalWorkouts}',
+                                  subtitle: 'completed',
+                                  icon: Icons.fitness_center,
+                                )
+                                .animate()
+                                .fadeIn(duration: 260.ms)
+                                .slideY(begin: 0.08, end: 0),
                           ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: buildStatCard(
-                            title: 'Minutes',
-                            value: '${summary.totalMinutes}',
-                            subtitle: 'trained',
-                            icon: Icons.timer_outlined,
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: buildStatCard(
+                                  title: 'Minutes',
+                                  value: '${summary.totalMinutes}',
+                                  subtitle: 'trained',
+                                  icon: Icons.timer_outlined,
+                                )
+                                .animate(delay: 80.ms)
+                                .fadeIn(duration: 260.ms)
+                                .slideY(begin: 0.08, end: 0),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    buildLargeStatCard(
-                      title: 'Calories Burned',
-                      value: '${summary.estimatedCalories}',
-                      subtitle: 'estimated kcal',
-                      icon: Icons.local_fire_department_outlined,
-                    ),
+                      buildLargeStatCard(
+                            title: 'Calories Burned',
+                            value: '${summary.estimatedCalories}',
+                            subtitle: 'estimated kcal',
+                            icon: Icons.local_fire_department_outlined,
+                          )
+                          .animate(delay: 140.ms)
+                          .fadeIn(duration: 280.ms)
+                          .scale(
+                            begin: const Offset(0.97, 0.97),
+                            end: const Offset(1, 1),
+                          ),
 
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                    buildSectionTitle(
-                      'Weekly Activity',
-                      'Workouts completed by day',
-                    ),
+                      buildSectionTitle(
+                        'Weekly Activity',
+                        'Workouts completed by day',
+                      ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    buildChartCard(summary.weeklyData),
+                      buildChartCard(summary.weeklyData)
+                          .animate(delay: 180.ms)
+                          .fadeIn(duration: 320.ms)
+                          .slideY(begin: 0.06, end: 0),
 
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                    buildSectionTitle(
-                      'Recent Workouts',
-                      'Last sessions saved locally',
-                    ),
+                      buildSectionTitle(
+                        'Recent Workouts',
+                        'Last sessions saved locally',
+                      ),
 
-                    const SizedBox(height: 18),
+                      const SizedBox(height: 18),
 
-                    if (summary.workouts.isEmpty)
-                      buildEmptyState()
-                    else
-                      buildRecentWorkouts(summary.workouts),
+                      if (summary.workouts.isEmpty)
+                        buildEmptyState()
+                      else
+                        buildRecentWorkouts(summary.workouts),
 
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                    buildMotivationCard(),
-                  ],
+                      buildMotivationCard(),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -148,7 +168,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           'Progress',
           style: GoogleFonts.inter(
             color: Colors.white,
-            fontSize: 38,
+            fontSize: 28,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -204,7 +224,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             value,
             style: GoogleFonts.inter(
               color: Colors.white,
-              fontSize: 34,
+              fontSize: 28,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -249,7 +269,15 @@ class _ProgressScreenState extends State<ProgressScreen> {
               color: neonGreen.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(icon, color: neonGreen, size: 30),
+            child: Icon(icon, color: neonGreen, size: 30)
+                .animate()
+                .scale(
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1.14, 1.14),
+                  duration: 420.ms,
+                )
+                .then()
+                .shake(duration: 620.ms, hz: 2),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -260,7 +288,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   value,
                   style: GoogleFonts.inter(
                     color: Colors.white,
-                    fontSize: 34,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -360,53 +388,64 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
     return Column(
       children:
-          recentWorkouts.map((workout) {
+          recentWorkouts.asMap().entries.map((entry) {
+            final index = entry.key;
+            final workout = entry.value;
+
             return Container(
-              margin: const EdgeInsets.only(bottom: 14),
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: neonGreen.withValues(alpha: 0.18)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: neonGreen.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(Icons.fitness_center, color: neonGreen),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          workout.routineName,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          '${workout.date} · ${workout.duration} min',
-                          style: GoogleFonts.inter(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: neonGreen.withValues(alpha: 0.18),
                     ),
                   ),
-                ],
-              ),
-            );
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: neonGreen.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: const Icon(
+                          Icons.fitness_center,
+                          color: neonGreen,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              workout.routineName,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '${workout.date} - ${workout.duration} min',
+                              style: GoogleFonts.inter(
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                .animate(delay: (55 * index).ms)
+                .fadeIn(duration: 240.ms)
+                .slideX(begin: 0.04, end: 0);
           }).toList(),
     );
   }

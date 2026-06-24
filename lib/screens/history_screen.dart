@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/completed_workout.dart';
@@ -60,7 +60,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                 style: GoogleFonts.inter(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -154,7 +154,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ),
 
                                   child: Text(
-                                    '${workout.duration} min',
+                                    '${workout.duration} min - ${workout.calories} kcal',
 
                                     style: GoogleFonts.inter(
                                       color: neonGreen,

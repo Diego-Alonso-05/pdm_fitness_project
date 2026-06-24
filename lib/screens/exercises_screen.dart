@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/exercise.dart';
@@ -73,17 +74,24 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       color: neonGreen,
                       backgroundColor: cardColor,
                       onRefresh: refreshExercises,
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics(),
-                        ),
-                        padding: const EdgeInsets.only(bottom: 20),
-                        itemCount: exerciseList.length,
-                        itemBuilder: (context, index) {
-                          final exercise = exerciseList[index];
+                      child: Scrollbar(
+                        radius: const Radius.circular(20),
+                        thickness: 4,
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding: const EdgeInsets.only(bottom: 20, right: 6),
+                          itemCount: exerciseList.length,
+                          itemBuilder: (context, index) {
+                            final exercise = exerciseList[index];
 
-                          return buildExerciseCard(exercise, index);
-                        },
+                            return buildExerciseCard(exercise, index)
+                                .animate(delay: (45 * index).ms)
+                                .fadeIn(duration: 260.ms)
+                                .slideY(begin: 0.08, end: 0);
+                          },
+                        ),
                       ),
                     );
                   },
@@ -104,14 +112,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           'Exercise\nLibrary',
           style: GoogleFonts.inter(
             color: primaryText,
-            fontSize: 36,
+            fontSize: 32,
             fontWeight: FontWeight.w900,
             height: 1,
           ),
         ),
         const SizedBox(height: 14),
         Text(
-          'Discover exercises from an online API',
+          'Online API exercises with local offline cache',
           style: GoogleFonts.inter(
             color: secondaryText,
             fontSize: 14,
@@ -119,7 +127,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           ),
         ),
       ],
-    );
+    ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.06, end: 0);
   }
 
   Widget buildExerciseCard(Exercise exercise, int index) {
@@ -278,8 +286,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: neonGreen.withValues(alpha: 0.12)),
       ),
-      child: const Center(
-        child: Icon(Icons.fitness_center, color: neonGreen, size: 42),
+      child: Center(
+        child: const Icon(Icons.fitness_center, color: neonGreen, size: 42)
+            .animate()
+            .scale(
+              begin: const Offset(0.92, 0.92),
+              end: const Offset(1.08, 1.08),
+              duration: 480.ms,
+            )
+            .then()
+            .shake(duration: 600.ms, hz: 2),
       ),
     );
   }

@@ -1,6 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,6 +32,10 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
   final int totalSets = 4;
 
   int secondsElapsed = 0;
+
+  int setAnimationSeed = 0;
+
+  int exerciseAnimationSeed = 0;
 
   Timer? timer;
 
@@ -78,6 +83,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     if (currentSet < totalSets) {
       setState(() {
         currentSet++;
+        setAnimationSeed++;
       });
     } else {
       nextExercise();
@@ -90,6 +96,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         currentExerciseIndex++;
 
         currentSet = 1;
+
+        exerciseAnimationSeed++;
+        setAnimationSeed++;
       });
     } else {
       timer?.cancel();
@@ -105,6 +114,8 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
 
         duration: secondsElapsed ~/ 60,
+
+        calories: 100,
       );
 
       await DatabaseService.instance.insertWorkout(workout);
@@ -127,7 +138,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             ),
 
             title: Text(
-              'Workout Complete 🎉',
+              'Workout Complete',
 
               style: GoogleFonts.inter(
                 color: Colors.white,
@@ -135,10 +146,29 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
               ),
             ),
 
-            content: Text(
-              'Your workout has been saved locally.',
-
-              style: GoogleFonts.inter(color: Colors.grey),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.orangeAccent,
+                      size: 46,
+                    )
+                    .animate()
+                    .scale(
+                      begin: const Offset(0.8, 0.8),
+                      end: const Offset(1.15, 1.15),
+                      duration: 450.ms,
+                    )
+                    .then()
+                    .shake(duration: 700.ms, hz: 3),
+                const SizedBox(height: 12),
+                Text(
+                  'Your workout has been saved locally.\nEstimated calories burned: 100 kcal.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(color: Colors.grey),
+                ),
+              ],
             ),
 
             actions: [
@@ -191,7 +221,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      context.go('/routines');
                     },
 
                     child: Container(
@@ -313,17 +343,52 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
 
                     const SizedBox(height: 14),
 
-                    Text(
-                      currentExercise,
-
-                      overflow: TextOverflow.ellipsis,
-
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        if (exerciseAnimationSeed > 0)
+                          Positioned(
+                            right: 0,
+                            top: -28,
+                            child: buildFloatingBadge(
+                                  icon: Icons.fitness_center,
+                                  text: 'Next exercise',
+                                )
+                                .animate(key: ValueKey(exerciseAnimationSeed))
+                                .fadeIn(duration: 150.ms)
+                                .moveY(begin: 12, end: -12, duration: 700.ms)
+                                .fadeOut(delay: 520.ms, duration: 260.ms),
+                          ),
+                        Text(
+                              currentExercise,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            )
+                            .animate(
+                              key: ValueKey('exercise-$currentExerciseIndex'),
+                            )
+                            .fadeIn(duration: 220.ms)
+                            .slideX(begin: 0.08, end: 0, duration: 260.ms),
+                      ],
                     ),
+
+                    if (setAnimationSeed > 0)
+                      Center(
+                        child: buildWeightsBurst()
+                            .animate(key: ValueKey(setAnimationSeed))
+                            .fadeIn(duration: 120.ms)
+                            .scale(
+                              begin: const Offset(0.75, 0.75),
+                              end: const Offset(1.08, 1.08),
+                              duration: 320.ms,
+                            )
+                            .moveY(begin: 8, end: -18, duration: 650.ms)
+                            .fadeOut(delay: 420.ms, duration: 250.ms),
+                      ),
 
                     const SizedBox(height: 24),
 
@@ -420,6 +485,47 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildWeightsBurst() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        Icon(Icons.fitness_center, color: neonGreen, size: 22),
+        SizedBox(width: 8),
+        Icon(Icons.check_circle, color: neonGreen, size: 28),
+        SizedBox(width: 8),
+        Icon(Icons.fitness_center, color: neonGreen, size: 22),
+      ],
+    );
+  }
+
+  Widget buildFloatingBadge({required IconData icon, required String text}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: neonGreen,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: neonGreen.withValues(alpha: 0.24), blurRadius: 18),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.black, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: GoogleFonts.inter(
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontSize: 12,
             ),
           ),
         ],

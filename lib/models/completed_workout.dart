@@ -7,6 +7,8 @@ class CompletedWorkout {
 
   final int duration;
 
+  final int calories;
+
   CompletedWorkout({
     this.id,
 
@@ -15,6 +17,8 @@ class CompletedWorkout {
     required this.date,
 
     required this.duration,
+
+    this.calories = 100,
   });
 
   // =========================================================
@@ -30,6 +34,8 @@ class CompletedWorkout {
       'date': date,
 
       'duration': duration,
+
+      'calories': calories,
     };
   }
 
@@ -46,6 +52,8 @@ class CompletedWorkout {
       date: map['date'],
 
       duration: map['duration'],
+
+      calories: map['calories'] ?? 100,
     );
   }
 }

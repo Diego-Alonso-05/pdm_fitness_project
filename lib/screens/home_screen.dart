@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/routine.dart';
+import '../services/database_service.dart';
 import '../services/sync_manager.dart';
 import '../widgets/custom_bottom_navbar.dart';
 
@@ -61,9 +63,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int workoutSessions = 2;
 
+  int totalCalories = 0;
+
   final int maxWater = 8;
 
   int waterAnimationSeed = 0;
+
+  Routine? selectedRoutine;
+
+  final ScrollController dashboardScrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadDashboardData();
+  }
+
+  @override
+  void dispose() {
+    dashboardScrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadDashboardData() async {
+    final routine = await DatabaseService.instance.getSelectedRoutine();
+    final workouts = await DatabaseService.instance.getWorkouts();
+
+    if (!mounted) return;
+
+    setState(() {
+      selectedRoutine = routine;
+      workoutSessions = workouts.length;
+      totalCalories = workouts.fold<int>(
+        0,
+        (sum, workout) => sum + workout.calories,
+      );
+    });
+  }
 
   // =========================================================
   // GREETING
@@ -94,16 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
         waterAnimationSeed++;
       });
 
-      showCustomSnackBar('Water updated 💧');
+      showCustomSnackBar('Water updated');
     }
   }
 
   void startWorkout() {
-    setState(() {
-      workoutSessions++;
-    });
+    final routine = selectedRoutine;
 
-    showCustomSnackBar('Workout started 🔥');
+    if (routine == null) {
+      showCustomSnackBar('No routine selected');
+      return;
+    }
+
+    context.go('/session', extra: routine);
   }
 
   void showCustomSnackBar(String text) {
@@ -305,68 +344,61 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: backgroundColor,
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 0),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 110),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildHeader(),
-
-              const SizedBox(height: 34),
-
-              buildTodaySection(),
-
-              const SizedBox(height: 24),
-
-              buildStatsSection(),
-
-              const SizedBox(height: 16),
-
-              buildMotivationCard(),
-
-              const SizedBox(height: 16),
-
-              buildWorkoutPlanCard(),
-
-              const SizedBox(height: 16),
-
-              buildWaterTrackerCard(),
-
-              const SizedBox(height: 16),
-
-              buildNearbyGymsCard(),
-
-              const SizedBox(height: 16),
-
-              // =====================================
-              // API BUTTON
-              // =====================================
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: neonGreen,
-                    side: BorderSide(color: neonGreen.withValues(alpha: 0.30)),
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
+        child: Scrollbar(
+          controller: dashboardScrollController,
+          thumbVisibility: true,
+          trackVisibility: true,
+          thickness: 4,
+          radius: const Radius.circular(20),
+          child: SingleChildScrollView(
+            controller: dashboardScrollController,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(18, 18, 22, 118),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildHeader(),
+                const SizedBox(height: 28),
+                buildTodaySection(),
+                const SizedBox(height: 22),
+                buildStatsSection(),
+                const SizedBox(height: 18),
+                buildMotivationCard(),
+                const SizedBox(height: 18),
+                buildWorkoutPlanCard(),
+                const SizedBox(height: 18),
+                buildWaterTrackerCard(),
+                const SizedBox(height: 18),
+                buildNearbyGymsCard(),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: neonGreen,
+                      side: BorderSide(
+                        color: neonGreen.withValues(alpha: 0.30),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    context.go('/exercises');
-                  },
-                  child: Text(
-                    'OPEN EXERCISE LIBRARY',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
+                    onPressed: () {
+                      context.go('/exercises');
+                    },
+                    child: Text(
+                      'OPEN EXERCISE LIBRARY',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -390,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.inter(
                   color: neonGreen,
-                  fontSize: 34,
+                  fontSize: 30,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1,
                 ),
@@ -456,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Today',
           style: GoogleFonts.inter(
             color: primaryText,
-            fontSize: 40,
+            fontSize: 34,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -481,9 +513,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Expanded(
           child: buildStatCard(
             title: 'Calories',
-            value: '1240',
+            value: '$totalCalories',
             subtitle: 'kcal burned',
             icon: Icons.local_fire_department_outlined,
+            animateIcon: true,
           ),
         ),
 
@@ -506,9 +539,10 @@ class _HomeScreenState extends State<HomeScreen> {
     required String value,
     required String subtitle,
     required IconData icon,
+    bool animateIcon = false,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
@@ -529,7 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     color: secondaryText,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -537,7 +571,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(width: 8),
 
-              Icon(icon, color: neonGreen, size: 22),
+              Icon(icon, color: neonGreen, size: 22)
+                  .animate(
+                    target: animateIcon && totalCalories > 0 ? 1 : 0,
+                    onComplete: (controller) {
+                      if (animateIcon && totalCalories > 0) {
+                        controller.repeat(reverse: true);
+                      }
+                    },
+                  )
+                  .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.18, 1.18),
+                    duration: 420.ms,
+                  )
+                  .shake(duration: 900.ms, hz: 2),
             ],
           ),
 
@@ -550,7 +598,7 @@ class _HomeScreenState extends State<HomeScreen> {
               value,
               style: GoogleFonts.inter(
                 color: primaryText,
-                fontSize: 42,
+                fontSize: 36,
                 fontWeight: FontWeight.w900,
                 height: 1,
               ),
@@ -564,10 +612,60 @@ class _HomeScreenState extends State<HomeScreen> {
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               color: mutedText,
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
           ),
+
+          if (animateIcon) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orangeAccent.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                            Icons.local_fire_department,
+                            color: Colors.orangeAccent,
+                            size: 16,
+                          )
+                          .animate()
+                          .scale(
+                            begin: const Offset(0.9, 0.9),
+                            end: const Offset(1.18, 1.18),
+                            duration: 500.ms,
+                          )
+                          .then()
+                          .shake(duration: 700.ms, hz: 2),
+                      const SizedBox(width: 6),
+                      Text(
+                        '+100 kcal',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          color: Colors.orangeAccent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -580,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildMotivationCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
@@ -607,7 +705,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Daily Motivation',
                   style: GoogleFonts.inter(
                     color: secondaryText,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -618,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Consistency beats motivation.',
                   style: GoogleFonts.inter(
                     color: primaryText,
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -637,7 +735,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildWorkoutPlanCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
@@ -658,7 +756,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         color: primaryText,
-                        fontSize: 26,
+                        fontSize: 24,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -666,7 +764,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 6),
 
                     Text(
-                      'Push workout • 45 min',
+                      selectedRoutine == null
+                          ? 'No routine selected'
+                          : '${selectedRoutine!.name} • ${selectedRoutine!.duration} min',
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         color: secondaryText,
@@ -677,13 +777,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: neonGreen.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
+              GestureDetector(
+                onTap: () {
+                  context.go('/routines');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: neonGreen.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.arrow_forward, color: neonGreen),
                 ),
-                child: const Icon(Icons.arrow_forward, color: neonGreen),
               ),
             ],
           ),

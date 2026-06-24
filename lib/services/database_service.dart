@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/completed_workout.dart';
 import '../models/exercise.dart';
+import '../models/routine.dart';
 
 class DatabaseService {
   // =========================================================
@@ -42,16 +43,26 @@ class DatabaseService {
     final database = await openDatabase(
       databasePath,
 
-      version: 2,
+      version: 3,
 
       onCreate: (db, version) async {
         await _createCompletedWorkoutsTable(db);
         await _createCachedExercisesTable(db);
+        await _createRoutinesTable(db);
+        await _createSelectedRoutineTable(db);
       },
 
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           await _createCachedExercisesTable(db);
+        }
+
+        if (oldVersion < 3) {
+          await db.execute(
+            'ALTER TABLE completed_workouts ADD COLUMN calories INTEGER NOT NULL DEFAULT 100',
+          );
+          await _createRoutinesTable(db);
+          await _createSelectedRoutineTable(db);
         }
       },
     );
@@ -69,7 +80,9 @@ class DatabaseService {
 
             date TEXT NOT NULL,
 
-            duration INTEGER NOT NULL
+            duration INTEGER NOT NULL,
+
+            calories INTEGER NOT NULL DEFAULT 100
 
           )
         ''');
@@ -110,6 +123,7 @@ class DatabaseService {
       'routineName': workout.routineName,
       'date': workout.date,
       'duration': workout.duration,
+      'calories': workout.calories,
     });
   }
 
@@ -129,6 +143,8 @@ class DatabaseService {
         date: workout['date'] as String,
 
         duration: workout['duration'] as int,
+
+        calories: workout['calories'] as int? ?? 100,
       );
     }).toList();
   }
@@ -172,5 +188,87 @@ class DatabaseService {
     return data.map((exercise) {
       return Exercise.fromMap(exercise);
     }).toList();
+  }
+
+  // =========================================================
+  // ROUTINES
+  // =========================================================
+
+  Future<void> _createRoutinesTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE custom_routines (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            name TEXT NOT NULL,
+
+            difficulty TEXT NOT NULL,
+
+            duration INTEGER NOT NULL,
+
+            exercises TEXT NOT NULL
+
+          )
+        ''');
+  }
+
+  Future<void> _createSelectedRoutineTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE selected_routine (
+
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+
+            name TEXT NOT NULL,
+
+            difficulty TEXT NOT NULL,
+
+            duration INTEGER NOT NULL,
+
+            exercises TEXT NOT NULL
+
+          )
+        ''');
+  }
+
+  Future<int> insertRoutine(Routine routine) async {
+    final db = await database;
+
+    return db.insert('custom_routines', routine.toMap());
+  }
+
+  Future<List<Routine>> getCustomRoutines() async {
+    final db = await database;
+
+    final data = await db.query('custom_routines', orderBy: 'id DESC');
+
+    return data.map((routine) {
+      return Routine.fromMap(routine);
+    }).toList();
+  }
+
+  Future<void> selectRoutine(Routine routine) async {
+    final db = await database;
+
+    await db.insert('selected_routine', {
+      ...routine.toMap(),
+      'id': 1,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<Routine?> getSelectedRoutine() async {
+    final db = await database;
+
+    final data = await db.query(
+      'selected_routine',
+      where: 'id = ?',
+      whereArgs: [1],
+      limit: 1,
+    );
+
+    if (data.isEmpty) {
+      return null;
+    }
+
+    return Routine.fromMap(data.first);
   }
 }

@@ -13,7 +13,7 @@ class ExerciseApiService {
     try {
       final url = Uri.parse(baseUrl);
 
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
         throw Exception('API Error ${response.statusCode}');
@@ -22,7 +22,7 @@ class ExerciseApiService {
       final List data = jsonDecode(response.body);
 
       final exercises =
-          data.take(20).map((item) {
+          data.take(50).map((item) {
             return Exercise.fromJson(Map<String, dynamic>.from(item));
           }).toList();
 

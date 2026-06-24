@@ -35,7 +35,10 @@ class ProgressController {
       (sum, workout) => sum + workout.duration,
     );
 
-    final estimatedCalories = totalMinutes * 8;
+    final estimatedCalories = workouts.fold<int>(
+      0,
+      (sum, workout) => sum + workout.calories,
+    );
 
     final weeklyData = _buildWeeklyData(workouts);
 

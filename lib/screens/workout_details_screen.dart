@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -36,7 +36,7 @@ class WorkoutDetailsScreen extends StatelessWidget {
               // =====================================
               GestureDetector(
                 onTap: () {
-                  Navigator.pop(context);
+                  context.go('/routines');
                 },
 
                 child: Container(
@@ -66,7 +66,7 @@ class WorkoutDetailsScreen extends StatelessWidget {
 
                 style: GoogleFonts.inter(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                 ),
               ),
