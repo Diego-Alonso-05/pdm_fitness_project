@@ -219,13 +219,4 @@ configuration.
 | `url_launcher` | Opening Google Maps / external links. |
 | `google_fonts` | Typography styling. |
 
-## Delivery Notes
 
-According to the assignment statement, the ZIP delivery should include:
-
-- This group identification document.
-- The `lib` folder.
-- `pubspec.yaml`.
-
-Optional but recommended: include this Markdown version together with the plain
-text version for easier reading.
