@@ -120,6 +120,4 @@ Main Packages Used
 - url_launcher: opening Google Maps / external URLs.
 - google_fonts: typography styling.
 
-Delivery Notes
-According to the assignment statement, the delivery ZIP should include this
-identification file, the lib folder, and pubspec.yaml.
+
