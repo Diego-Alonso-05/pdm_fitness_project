@@ -1,5 +1,4 @@
 class CompletedWorkout {
-
   final int? id;
 
   final String routineName;
@@ -9,7 +8,6 @@ class CompletedWorkout {
   final int duration;
 
   CompletedWorkout({
-
     this.id,
 
     required this.routineName,
@@ -17,7 +15,6 @@ class CompletedWorkout {
     required this.date,
 
     required this.duration,
-
   });
 
   // =========================================================
@@ -25,9 +22,7 @@ class CompletedWorkout {
   // =========================================================
 
   Map<String, dynamic> toMap() {
-
     return {
-
       'id': id,
 
       'routineName': routineName,
@@ -35,7 +30,6 @@ class CompletedWorkout {
       'date': date,
 
       'duration': duration,
-
     };
   }
 
@@ -43,12 +37,8 @@ class CompletedWorkout {
   // FROM MAP
   // =========================================================
 
-  factory CompletedWorkout.fromMap(
-    Map<String, dynamic> map,
-  ) {
-
+  factory CompletedWorkout.fromMap(Map<String, dynamic> map) {
     return CompletedWorkout(
-
       id: map['id'],
 
       routineName: map['routineName'],
@@ -56,7 +46,6 @@ class CompletedWorkout {
       date: map['date'],
 
       duration: map['duration'],
-
     );
   }
 }

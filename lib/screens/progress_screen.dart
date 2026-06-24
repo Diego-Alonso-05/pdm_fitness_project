@@ -38,18 +38,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      bottomNavigationBar: const CustomBottomNavbar(
-        currentIndex: 2,
-      ),
+      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
       body: SafeArea(
         child: FutureBuilder<ProgressSummary>(
           future: progressFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                  color: neonGreen,
-                ),
+                child: CircularProgressIndicator(color: neonGreen),
               );
             }
 
@@ -67,12 +63,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  120,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -164,19 +155,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
         const SizedBox(height: 8),
         Text(
           'Track your fitness evolution',
-          style: GoogleFonts.inter(
-            color: Colors.grey,
-            fontSize: 15,
-          ),
+          style: GoogleFonts.inter(color: Colors.grey, fontSize: 15),
         ),
       ],
     );
   }
 
-  Widget buildSectionTitle(
-    String title,
-    String subtitle,
-  ) {
+  Widget buildSectionTitle(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -191,10 +176,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         const SizedBox(height: 6),
         Text(
           subtitle,
-          style: GoogleFonts.inter(
-            color: Colors.grey,
-            fontSize: 14,
-          ),
+          style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
         ),
       ],
     );
@@ -211,18 +193,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.20),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: neonGreen,
-            size: 24,
-          ),
+          Icon(icon, color: neonGreen, size: 24),
           const SizedBox(height: 20),
           Text(
             value,
@@ -244,10 +220,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.inter(
-              color: Colors.grey,
-              fontSize: 13,
-            ),
+            style: GoogleFonts.inter(color: Colors.grey, fontSize: 13),
           ),
         ],
       ),
@@ -266,23 +239,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.20),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: neonGreen.withOpacity(0.12),
+              color: neonGreen.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(
-              icon,
-              color: neonGreen,
-              size: 30,
-            ),
+            child: Icon(icon, color: neonGreen, size: 30),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -309,10 +276,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
-                    color: Colors.grey,
-                    fontSize: 13,
-                  ),
+                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 13),
                 ),
               ],
             ),
@@ -322,15 +286,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget buildChartCard(
-    List<WeeklyWorkoutData> weeklyData,
-  ) {
+  Widget buildChartCard(List<WeeklyWorkoutData> weeklyData) {
     final maxValue = weeklyData
         .map((data) => data.workouts)
         .fold<int>(
           0,
-          (previous, current) =>
-              current > previous ? current : previous,
+          (previous, current) => current > previous ? current : previous,
         );
 
     final maxY = maxValue < 3 ? 3.0 : maxValue + 1.0;
@@ -341,36 +302,18 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.20),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
       ),
       child: BarChart(
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
           maxY: maxY,
-          gridData: FlGridData(
-            show: false,
-          ),
-          borderData: FlBorderData(
-            show: false,
-          ),
+          gridData: FlGridData(show: false),
+          borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: false,
-              ),
-            ),
-            topTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: false,
-              ),
-            ),
-            rightTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: false,
-              ),
-            ),
+            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -383,10 +326,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
                   return Text(
                     weeklyData[index].day,
-                    style: GoogleFonts.inter(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
                   );
                 },
               ),
@@ -394,20 +334,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
           ),
           barGroups: List.generate(
             weeklyData.length,
-            (index) => buildBar(
-              index,
-              weeklyData[index].workouts.toDouble(),
-            ),
+            (index) => buildBar(index, weeklyData[index].workouts.toDouble()),
           ),
         ),
       ),
     );
   }
 
-  BarChartGroupData buildBar(
-    int x,
-    double y,
-  ) {
+  BarChartGroupData buildBar(int x, double y) {
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -421,65 +355,59 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget buildRecentWorkouts(
-    List<CompletedWorkout> workouts,
-  ) {
+  Widget buildRecentWorkouts(List<CompletedWorkout> workouts) {
     final recentWorkouts = workouts.reversed.take(5).toList();
 
     return Column(
-      children: recentWorkouts.map((workout) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 14),
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: neonGreen.withOpacity(0.18),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: neonGreen.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: const Icon(
-                  Icons.fitness_center,
-                  color: neonGreen,
-                ),
+      children:
+          recentWorkouts.map((workout) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: neonGreen.withValues(alpha: 0.18)),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      workout.routineName,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                      ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: neonGreen.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '${workout.date} · ${workout.duration} min',
-                      style: GoogleFonts.inter(
-                        color: Colors.grey,
-                        fontSize: 13,
-                      ),
+                    child: const Icon(Icons.fitness_center, color: neonGreen),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          workout.routineName,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${workout.date} · ${workout.duration} min',
+                          style: GoogleFonts.inter(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
@@ -490,17 +418,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.20),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.insights,
-            color: neonGreen,
-            size: 42,
-          ),
+          Icon(Icons.insights, color: neonGreen, size: 42),
           const SizedBox(height: 16),
           Text(
             'No workouts yet',
@@ -514,10 +436,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Text(
             'Complete a workout session to see your progress here.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              color: Colors.grey,
-              fontSize: 14,
-            ),
+            style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
           ),
         ],
       ),
@@ -531,9 +450,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.20),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
       ),
       child: Row(
         children: [
@@ -543,10 +460,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               color: neonGreen,
               borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: Colors.black,
-            ),
+            child: const Icon(Icons.auto_awesome, color: Colors.black),
           ),
           const SizedBox(width: 18),
           Expanded(
@@ -573,18 +487,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: Colors.red.withOpacity(0.35),
-            ),
+            border: Border.all(color: Colors.red.withValues(alpha: 0.35)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 42,
-              ),
+              const Icon(Icons.error_outline, color: Colors.red, size: 42),
               const SizedBox(height: 16),
               Text(
                 'Error loading progress',
@@ -598,10 +506,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               Text(
                 'Please try again later.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
               ),
             ],
           ),

@@ -12,7 +12,6 @@ import 'screens/workout_session_screen.dart';
 import 'screens/exercises_screen.dart';
 
 void main() {
-
   runApp(const MyApp());
 }
 
@@ -21,99 +20,71 @@ void main() {
 // =========================================================
 
 final GoRouter router = GoRouter(
-
   initialLocation: '/',
 
   routes: [
-
     // =====================================
     // HOME
     // =====================================
-
-    GoRoute(
-      path: '/',
-      builder: (context, state) =>
-          const HomeScreen(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
 
     // =====================================
     // ROUTINES
     // =====================================
-
     GoRoute(
       path: '/routines',
-      builder: (context, state) =>
-          const RoutinesScreen(),
+      builder: (context, state) => const RoutinesScreen(),
     ),
 
     // =====================================
     // PROGRESS
     // =====================================
-
     GoRoute(
       path: '/progress',
-      builder: (context, state) =>
-          const ProgressScreen(),
+      builder: (context, state) => const ProgressScreen(),
     ),
 
     // =====================================
     // HISTORY
     // =====================================
-
     GoRoute(
       path: '/history',
-      builder: (context, state) =>
-          const HistoryScreen(),
+      builder: (context, state) => const HistoryScreen(),
     ),
 
     // =====================================
     // EXERCISES API
     // =====================================
-
     GoRoute(
       path: '/exercises',
-      builder: (context, state) =>
-          const ExercisesScreen(),
+      builder: (context, state) => const ExercisesScreen(),
     ),
 
     // =====================================
     // WORKOUT DETAILS
     // =====================================
-
     GoRoute(
-
       path: '/workout',
 
       builder: (context, state) {
+        final routine = state.extra as Routine;
 
-        final routine =
-            state.extra as Routine;
-
-        return WorkoutDetailsScreen(
-          routine: routine,
-        );
+        return WorkoutDetailsScreen(routine: routine);
       },
     ),
 
     // =====================================
     // WORKOUT SESSION
     // =====================================
-
     GoRoute(
-
       path: '/session',
 
       builder: (context, state) {
+        final routine = state.extra as Routine;
 
-        final routine =
-            state.extra as Routine;
-
-        return WorkoutSessionScreen(
-          routine: routine,
-        );
+        return WorkoutSessionScreen(routine: routine);
       },
     ),
-
   ],
 );
 
@@ -122,38 +93,28 @@ final GoRouter router = GoRouter(
 // =========================================================
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp.router(
-
       debugShowCheckedModeBanner: false,
 
       title: 'FIT-NESS',
 
       theme: ThemeData(
-
         brightness: Brightness.dark,
 
-        scaffoldBackgroundColor:
-            const Color(0xFF050505),
+        scaffoldBackgroundColor: const Color(0xFF050505),
 
-        primaryColor:
-            const Color(0xFFB6FF00),
+        primaryColor: const Color(0xFFB6FF00),
 
         useMaterial3: true,
 
-        colorScheme:
-            ColorScheme.fromSeed(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFB6FF00),
 
-          seedColor:
-              const Color(0xFFB6FF00),
-
-          brightness:
-              Brightness.dark,
+          brightness: Brightness.dark,
         ),
       ),
 

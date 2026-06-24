@@ -6,25 +6,18 @@ import '../services/database_service.dart';
 import '../widgets/custom_bottom_navbar.dart';
 
 class HistoryScreen extends StatefulWidget {
-
   const HistoryScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() =>
-      _HistoryScreenState();
+  State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState
-    extends State<HistoryScreen> {
+class _HistoryScreenState extends State<HistoryScreen> {
+  static const Color backgroundColor = Color(0xFF050505);
 
-  static const Color backgroundColor =
-      Color(0xFF050505);
+  static const Color cardColor = Color(0xFF111217);
 
-  static const Color cardColor =
-      Color(0xFF111217);
-
-  static const Color neonGreen =
-      Color(0xFFB6FF00);
+  static const Color neonGreen = Color(0xFFB6FF00);
 
   List<CompletedWorkout> workouts = [];
 
@@ -32,20 +25,15 @@ class _HistoryScreenState
 
   @override
   void initState() {
-
     super.initState();
 
     loadWorkouts();
   }
 
   Future<void> loadWorkouts() async {
-
-    final data =
-        await DatabaseService.instance
-            .getWorkouts();
+    final data = await DatabaseService.instance.getWorkouts();
 
     setState(() {
-
       workouts = data.reversed.toList();
 
       isLoading = false;
@@ -54,28 +42,19 @@ class _HistoryScreenState
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor: backgroundColor,
 
-      bottomNavigationBar:
-          const CustomBottomNavbar(
-        currentIndex: 3,
-      ),
+      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 3),
 
       body: SafeArea(
-
         child: Padding(
-
           padding: const EdgeInsets.all(20),
 
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               Text(
                 'Workout History',
 
@@ -91,207 +70,130 @@ class _HistoryScreenState
               Text(
                 'Track your completed workouts',
 
-                style: GoogleFonts.inter(
-                  color: Colors.grey,
-                  fontSize: 15,
-                ),
+                style: GoogleFonts.inter(color: Colors.grey, fontSize: 15),
               ),
 
               const SizedBox(height: 30),
 
               if (isLoading)
-
                 const Expanded(
-                  child: Center(
-                    child:
-                        CircularProgressIndicator(),
-                  ),
+                  child: Center(child: CircularProgressIndicator()),
                 )
-
               else if (workouts.isEmpty)
-
                 Expanded(
-
                   child: Center(
-
                     child: Text(
                       'No workouts completed yet.',
 
-                      style:
-                          GoogleFonts.inter(
+                      style: GoogleFonts.inter(
                         color: Colors.grey,
                         fontSize: 16,
                       ),
                     ),
                   ),
                 )
-
               else
-
                 Expanded(
-
                   child: ListView.builder(
-
-                    physics:
-                        const BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
 
                     itemCount: workouts.length,
 
-                    itemBuilder:
-                        (context, index) {
-
-                      final workout =
-                          workouts[index];
+                    itemBuilder: (context, index) {
+                      final workout = workouts[index];
 
                       return Container(
+                        margin: const EdgeInsets.only(bottom: 18),
 
-                        margin:
-                            const EdgeInsets.only(
-                          bottom: 18,
-                        ),
+                        padding: const EdgeInsets.all(22),
 
-                        padding:
-                            const EdgeInsets.all(
-                                22),
-
-                        decoration:
-                            BoxDecoration(
-
+                        decoration: BoxDecoration(
                           color: cardColor,
 
-                          borderRadius:
-                              BorderRadius
-                                  .circular(28),
+                          borderRadius: BorderRadius.circular(28),
 
                           border: Border.all(
-                            color: neonGreen
-                                .withOpacity(
-                                    0.20),
+                            color: neonGreen.withValues(alpha: 0.20),
                           ),
                         ),
 
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
-
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                               children: [
-
                                 Expanded(
-
                                   child: Text(
-                                    workout
-                                        .routineName,
+                                    workout.routineName,
 
-                                    overflow:
-                                        TextOverflow
-                                            .ellipsis,
+                                    overflow: TextOverflow.ellipsis,
 
-                                    style:
-                                        GoogleFonts
-                                            .inter(
-                                      color: Colors
-                                          .white,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
 
                                       fontSize: 22,
 
-                                      fontWeight:
-                                          FontWeight
-                                              .w800,
+                                      fontWeight: FontWeight.w800,
                                     ),
                                   ),
                                 ),
 
                                 Container(
-
-                                  padding:
-                                      const EdgeInsets
-                                          .symmetric(
-                                    horizontal:
-                                        12,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
                                     vertical: 8,
                                   ),
 
-                                  decoration:
-                                      BoxDecoration(
-                                    color: neonGreen
-                                        .withOpacity(
-                                            0.12),
+                                  decoration: BoxDecoration(
+                                    color: neonGreen.withValues(alpha: 0.12),
 
-                                    borderRadius:
-                                        BorderRadius
-                                            .circular(
-                                      14,
-                                    ),
+                                    borderRadius: BorderRadius.circular(14),
                                   ),
 
                                   child: Text(
                                     '${workout.duration} min',
 
-                                    style:
-                                        GoogleFonts
-                                            .inter(
-                                      color:
-                                          neonGreen,
+                                    style: GoogleFonts.inter(
+                                      color: neonGreen,
 
-                                      fontWeight:
-                                          FontWeight
-                                              .bold,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-
                               ],
                             ),
 
-                            const SizedBox(
-                                height: 18),
+                            const SizedBox(height: 18),
 
                             Row(
-
                               children: [
-
                                 const Icon(
-                                  Icons
-                                      .calendar_today,
-                                  color:
-                                      neonGreen,
+                                  Icons.calendar_today,
+                                  color: neonGreen,
                                   size: 18,
                                 ),
 
-                                const SizedBox(
-                                    width: 8),
+                                const SizedBox(width: 8),
 
                                 Text(
                                   workout.date,
 
-                                  style:
-                                      GoogleFonts
-                                          .inter(
-                                    color:
-                                        Colors.grey,
-                                    fontSize:
-                                        14,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.grey,
+                                    fontSize: 14,
                                   ),
                                 ),
-
                               ],
                             ),
-
                           ],
                         ),
                       );
                     },
                   ),
                 ),
-
             ],
           ),
         ),

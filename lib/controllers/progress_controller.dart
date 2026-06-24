@@ -5,10 +5,7 @@ class WeeklyWorkoutData {
   final String day;
   final int workouts;
 
-  WeeklyWorkoutData({
-    required this.day,
-    required this.workouts,
-  });
+  WeeklyWorkoutData({required this.day, required this.workouts});
 }
 
 class ProgressSummary {
@@ -51,9 +48,7 @@ class ProgressController {
     );
   }
 
-  List<WeeklyWorkoutData> _buildWeeklyData(
-    List<CompletedWorkout> workouts,
-  ) {
+  List<WeeklyWorkoutData> _buildWeeklyData(List<CompletedWorkout> workouts) {
     final counters = List<int>.filled(7, 0);
 
     for (final workout in workouts) {

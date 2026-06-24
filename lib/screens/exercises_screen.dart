@@ -38,17 +38,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      bottomNavigationBar: const CustomBottomNavbar(
-        currentIndex: 1,
-      ),
+      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            20,
-          ),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -60,12 +53,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                 child: FutureBuilder<List<Exercise>>(
                   future: exercises,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
-                        child: CircularProgressIndicator(
-                          color: neonGreen,
-                        ),
+                        child: CircularProgressIndicator(color: neonGreen),
                       );
                     }
 
@@ -87,17 +77,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),
-                        padding: const EdgeInsets.only(
-                          bottom: 20,
-                        ),
+                        padding: const EdgeInsets.only(bottom: 20),
                         itemCount: exerciseList.length,
                         itemBuilder: (context, index) {
                           final exercise = exerciseList[index];
 
-                          return buildExerciseCard(
-                            exercise,
-                            index,
-                          );
+                          return buildExerciseCard(exercise, index);
                         },
                       ),
                     );
@@ -137,10 +122,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     );
   }
 
-  Widget buildExerciseCard(
-    Exercise exercise,
-    int index,
-  ) {
+  Widget buildExerciseCard(Exercise exercise, int index) {
     final hasImage = exercise.gifUrl.isNotEmpty;
 
     return Container(
@@ -149,14 +131,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.18),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.18)),
         boxShadow: [
-          BoxShadow(
-            color: neonGreen.withOpacity(0.04),
-            blurRadius: 16,
-          ),
+          BoxShadow(color: neonGreen.withValues(alpha: 0.04), blurRadius: 16),
         ],
       ),
       child: Column(
@@ -174,11 +151,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                 height: 170,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (
-                  context,
-                  error,
-                  stackTrace,
-                ) {
+                errorBuilder: (context, error, stackTrace) {
                   return buildImagePlaceholder();
                 },
               ),
@@ -233,34 +206,21 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     );
   }
 
-  Widget buildTagRow(
-    Exercise exercise,
-  ) {
+  Widget buildTagRow(Exercise exercise) {
     return Row(
       children: [
-        buildTag(
-          exercise.bodyPart.toUpperCase(),
-        ),
+        buildTag(exercise.bodyPart.toUpperCase()),
         const SizedBox(width: 10),
-        Expanded(
-          child: buildTag(
-            exercise.target.toUpperCase(),
-          ),
-        ),
+        Expanded(child: buildTag(exercise.target.toUpperCase())),
       ],
     );
   }
 
-  Widget buildTag(
-    String text,
-  ) {
+  Widget buildTag(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: neonGreen.withOpacity(0.10),
+        color: neonGreen.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
@@ -284,11 +244,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: neonGreen,
-          size: 18,
-        ),
+        Icon(icon, color: neonGreen, size: 18),
         const SizedBox(width: 10),
         Text(
           '$label: ',
@@ -320,16 +276,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF171920),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: neonGreen.withOpacity(0.12),
-        ),
+        border: Border.all(color: neonGreen.withValues(alpha: 0.12)),
       ),
       child: const Center(
-        child: Icon(
-          Icons.fitness_center,
-          color: neonGreen,
-          size: 42,
-        ),
+        child: Icon(Icons.fitness_center, color: neonGreen, size: 42),
       ),
     );
   }
@@ -341,18 +291,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         decoration: BoxDecoration(
           color: cardColor,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: Colors.red.withOpacity(0.35),
-          ),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.35)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.wifi_off,
-              color: Colors.red,
-              size: 42,
-            ),
+            const Icon(Icons.wifi_off, color: Colors.red, size: 42),
             const SizedBox(height: 16),
             Text(
               'Could not load exercises',
@@ -366,10 +310,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             Text(
               'Check your internet connection and try again.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: mutedText,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.inter(color: mutedText, fontSize: 14),
             ),
             const SizedBox(height: 18),
             ElevatedButton(
@@ -380,9 +321,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               onPressed: refreshExercises,
               child: Text(
                 'RETRY',
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w800,
-                ),
+                style: GoogleFonts.inter(fontWeight: FontWeight.w800),
               ),
             ),
           ],
@@ -398,9 +337,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         decoration: BoxDecoration(
           color: cardColor,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: neonGreen.withOpacity(0.20),
-          ),
+          border: Border.all(color: neonGreen.withValues(alpha: 0.20)),
         ),
         child: Text(
           'No exercises available',

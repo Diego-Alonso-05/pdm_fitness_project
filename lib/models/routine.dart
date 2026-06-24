@@ -1,5 +1,4 @@
 class Routine {
-
   final String name;
 
   final String difficulty;
@@ -9,11 +8,9 @@ class Routine {
   final List<String> exercises;
 
   Routine({
-
     required this.name,
     required this.difficulty,
     required this.duration,
     required this.exercises,
-
   });
 }

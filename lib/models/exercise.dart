@@ -17,9 +17,7 @@ class Exercise {
     required this.target,
   });
 
-  factory Exercise.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
       id: json['id']?.toString() ?? '0',
       name: json['name']?.toString() ?? 'Unknown Exercise',
@@ -31,24 +29,42 @@ class Exercise {
     );
   }
 
-  static String _getDescription(
-    Map<String, dynamic> json,
-  ) {
+  factory Exercise.fromMap(Map<String, dynamic> map) {
+    return Exercise(
+      id: map['id']?.toString() ?? '0',
+      name: map['name']?.toString() ?? 'Unknown Exercise',
+      description: map['description']?.toString() ?? 'No description available',
+      bodyPart: map['bodyPart']?.toString() ?? 'Unknown',
+      equipment: map['equipment']?.toString() ?? 'Unknown',
+      gifUrl: map['gifUrl']?.toString() ?? '',
+      target: map['target']?.toString() ?? 'General',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'bodyPart': bodyPart,
+      'equipment': equipment,
+      'gifUrl': gifUrl,
+      'target': target,
+    };
+  }
+
+  static String _getDescription(Map<String, dynamic> json) {
     final instructions = json['instructions'];
 
-    if (instructions is List &&
-        instructions.isNotEmpty) {
+    if (instructions is List && instructions.isNotEmpty) {
       return instructions.join(' ');
     }
 
     return 'No description available';
   }
 
-  static String _getFirstValue(
-    dynamic value,
-  ) {
-    if (value is List &&
-        value.isNotEmpty) {
+  static String _getFirstValue(dynamic value) {
+    if (value is List && value.isNotEmpty) {
       return value.first.toString();
     }
 
